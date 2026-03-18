@@ -5,8 +5,15 @@
   const items = document.querySelectorAll('.grid-item');
   const modalContent = modal.querySelector('.modal-content');
 
+  // Custom controls
+  const playPauseBtn = document.getElementById('ctrlPlayPause');
+  const muteBtn = document.getElementById('ctrlMute');
+  const progressBar = document.getElementById('ctrlProgress');
+  const progressFill = document.getElementById('ctrlProgressFill');
+
   let hideTimer = null;
 
+  // --- Controls visibility ---
   function showControls() {
     modal.classList.add('controls-visible');
     modalContent.classList.add('controls-visible');
@@ -29,6 +36,47 @@
     clearTimeout(hideTimer);
   }
 
+  // --- Play / Pause ---
+  function updatePlayPause() {
+    playPauseBtn.classList.toggle('paused', video.paused);
+  }
+
+  playPauseBtn.addEventListener('click', () => {
+    if (video.paused) { video.play(); } else { video.pause(); }
+  });
+
+  video.addEventListener('play', updatePlayPause);
+  video.addEventListener('pause', updatePlayPause);
+
+  // Click on video to toggle play/pause
+  video.addEventListener('click', () => {
+    if (video.paused) { video.play(); } else { video.pause(); }
+  });
+
+  // --- Mute ---
+  function updateMute() {
+    muteBtn.classList.toggle('is-muted', video.muted);
+  }
+
+  muteBtn.addEventListener('click', () => {
+    video.muted = !video.muted;
+    updateMute();
+  });
+
+  // --- Progress ---
+  video.addEventListener('timeupdate', () => {
+    if (video.duration) {
+      progressFill.style.width = (video.currentTime / video.duration * 100) + '%';
+    }
+  });
+
+  progressBar.addEventListener('click', (e) => {
+    const rect = progressBar.getBoundingClientRect();
+    const ratio = (e.clientX - rect.left) / rect.width;
+    video.currentTime = ratio * video.duration;
+  });
+
+  // --- Modal open/close ---
   function openModal(src, item) {
     const isPortrait = item.classList.contains('portrait');
     const isSquare = item.classList.contains('square');
@@ -37,10 +85,14 @@
     if (isSquare) modalContent.classList.add('modal-square');
     video.querySelector('source').src = src;
     video.load();
+    video.muted = true;
     video.play();
     modal.classList.add('active');
     document.body.classList.add('modal-open');
     hideControls();
+    updatePlayPause();
+    updateMute();
+    progressFill.style.width = '0%';
   }
 
   function closeModal() {
@@ -53,11 +105,8 @@
     clearHideTimer();
   }
 
-  // Show controls on mouse move over modal
+  // Show controls on mouse move
   modal.addEventListener('mousemove', showControls);
-
-  // Keep controls visible while hovering over the video controls area (bottom 15%)
-  video.addEventListener('mouseenter', showControls);
 
   // Open on thumbnail click
   items.forEach(item => {
