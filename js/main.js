@@ -40,7 +40,7 @@
     video.play();
     modal.classList.add('active');
     document.body.classList.add('modal-open');
-    showControls();
+    hideControls();
   }
 
   function closeModal() {
