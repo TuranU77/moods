@@ -1,0 +1,4 @@
+.DS_Store
+Animation/
+*.mp4
+!assets/videos/**/*.mp4
