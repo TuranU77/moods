@@ -3,28 +3,61 @@
   const video = document.getElementById('modalVideo');
   const closeBtn = document.getElementById('modalClose');
   const items = document.querySelectorAll('.grid-item');
+  const modalContent = modal.querySelector('.modal-content');
+
+  let hideTimer = null;
+
+  function showControls() {
+    modal.classList.add('controls-visible');
+    modalContent.classList.add('controls-visible');
+    modalContent.classList.remove('controls-hidden');
+    resetHideTimer();
+  }
+
+  function hideControls() {
+    modal.classList.remove('controls-visible');
+    modalContent.classList.remove('controls-visible');
+    modalContent.classList.add('controls-hidden');
+  }
+
+  function resetHideTimer() {
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(hideControls, 2000);
+  }
+
+  function clearHideTimer() {
+    clearTimeout(hideTimer);
+  }
 
   function openModal(src, item) {
     const isPortrait = item.classList.contains('portrait');
     const isSquare = item.classList.contains('square');
-    const content = modal.querySelector('.modal-content');
-    content.classList.remove('modal-portrait', 'modal-square');
-    if (isPortrait) content.classList.add('modal-portrait');
-    if (isSquare) content.classList.add('modal-square');
+    modalContent.classList.remove('modal-portrait', 'modal-square');
+    if (isPortrait) modalContent.classList.add('modal-portrait');
+    if (isSquare) modalContent.classList.add('modal-square');
     video.querySelector('source').src = src;
     video.load();
     video.play();
     modal.classList.add('active');
     document.body.classList.add('modal-open');
+    showControls();
   }
 
   function closeModal() {
     video.pause();
     video.currentTime = 0;
     video.querySelector('source').src = '';
-    modal.classList.remove('active');
+    modal.classList.remove('active', 'controls-visible');
+    modalContent.classList.remove('controls-visible', 'controls-hidden');
     document.body.classList.remove('modal-open');
+    clearHideTimer();
   }
+
+  // Show controls on mouse move over modal
+  modal.addEventListener('mousemove', showControls);
+
+  // Keep controls visible while hovering over the video controls area (bottom 15%)
+  video.addEventListener('mouseenter', showControls);
 
   // Open on thumbnail click
   items.forEach(item => {

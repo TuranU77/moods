@@ -226,9 +226,14 @@ body {
   color: #888;
   font-size: 2rem;
   cursor: pointer;
-  transition: color 0.2s ease;
+  transition: color 0.2s ease, opacity 0.3s ease;
   z-index: 1001;
   line-height: 1;
+  opacity: 0;
+}
+
+.modal.controls-visible .modal-close {
+  opacity: 1;
 }
 
 .modal-close:hover {
@@ -254,6 +259,24 @@ body {
   border-radius: 4px;
   outline: none;
   object-fit: contain;
+}
+
+/* Auto-hide video controls */
+.modal-content video::-webkit-media-controls {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.modal-content.controls-visible video::-webkit-media-controls {
+  opacity: 1;
+}
+
+.modal-content.controls-hidden {
+  cursor: none;
+}
+
+.modal-content.controls-hidden .modal-close-zone {
+  cursor: none;
 }
 
 /* === Responsive === */
